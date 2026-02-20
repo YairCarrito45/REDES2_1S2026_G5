@@ -233,6 +233,11 @@ enable
   			switchport trunk allowed vlan 85,75,65
  			exit
 
+		interface gigabitEthernet 0/1
+			switchport mode trunk
+			switchport trunk allowed vlan 10,20,30
+			no shutdown
+			exit 
 		exit
 	write
 ```
@@ -509,5 +514,152 @@ enable
 			exit 
 
 		exit
+	write
+```
+
+
+# configuracion de IP
+	PC4 -: 192.178.85.11
+	default gateway: 192.178.85.1
+
+	PC5 -: 192.178.75.11
+	laptop1 -: 192.178.75.12
+	default gateway: 192.178.75.1
+
+	PC6 -: 192.178.65.11
+	PC7 -: 192.178.65.12
+	default gateway: 192.178.65.1
+
+
+
+
+# Port Security
+## direcciones mac-address
+	* PC4 -: 0002.4AA1.31BB
+
+	* PC5 -: 0004.9ADA.A0E8
+	* laptop1 -: 0001.9736.0902
+
+	* PC6 -: 0060.2FB1.E768
+	* PC7 -: 000D.BD42.0932
+
+### PC 4 - port-security
+```Cisco
+enable
+	configure terminal
+		interface FastEthernet0/11
+			switchport port-security
+			switchport port-security Maximum 1
+			switchport port-security violation shutdown
+			switchport port-security mac-address 0002.4AA1.31BB
+			no shutdown
+			exit
+
+		exit 
+	write
+
+```
+
+### verificar que se activo `show port-security interface FastEthernet0/11`:
+```bash
+SW19_G5#
+	SW19_G5#show port-security interface FastEthernet0/11
+	Port Security              : Enabled
+	Port Status                : Secure-up
+	Violation Mode             : Shutdown
+	Aging Time                 : 0 mins
+	Aging Type                 : Absolute
+	SecureStatic Address Aging : Disabled
+	Maximum MAC Addresses      : 1
+	Total MAC Addresses        : 1
+	Configured MAC Addresses   : 1
+	Sticky MAC Addresses       : 0
+	Last Source Address:Vlan   : 0000.0000.0000:0
+	Security Violation Count   : 0
+
+SW19_G5#
+
+```
+
+### ejemplo en un puerto que no esta activad `show port-security interface FastEthernet0/12`:
+
+```bash
+SW19_G5#show port-security interface FastEthernet0/12
+	Port Security              : Disabled
+	Port Status                : Secure-down
+	Violation Mode             : Shutdown
+	Aging Time                 : 0 mins
+	Aging Type                 : Absolute
+	SecureStatic Address Aging : Disabled
+	Maximum MAC Addresses      : 1
+	Total MAC Addresses        : 0
+	Configured MAC Addresses   : 0
+	Sticky MAC Addresses       : 0
+	Last Source Address:Vlan   : 0000.0000.0000:0
+	Security Violation Count   : 0
+SW19_G5#
+```
+
+
+## Port Security para el resto de switch 20, 21, 22, 23:
+```Cisco
+
+# pc5 - sw20
+enable
+	configure terminal
+		interface FastEthernet0/11
+			switchport port-security
+			switchport port-security Maximum 1
+			switchport port-security violation shutdown
+			switchport port-security mac-address 0004.9ADA.A0E8
+			no shutdown
+			exit
+
+		exit 
+	write
+
+
+# laptop1 - sw21
+enable
+	configure terminal
+		interface FastEthernet0/11
+			switchport port-security
+			switchport port-security Maximum 1
+			switchport port-security violation shutdown
+			switchport port-security mac-address 0001.9736.0902
+			no shutdown
+			exit
+
+		exit 
+	write
+
+
+# PC6 - sw22
+enable
+	configure terminal
+		interface FastEthernet0/11
+			switchport port-security
+			switchport port-security Maximum 1
+			switchport port-security violation shutdown
+			switchport port-security mac-address 0060.2FB1.E768
+			no shutdown
+			exit
+
+		exit 
+	write
+
+
+# PC7 - sw23
+enable
+	configure terminal
+		interface FastEthernet0/11
+			switchport port-security
+			switchport port-security Maximum 1
+			switchport port-security violation shutdown
+			switchport port-security mac-address 000D.BD42.0932
+			no shutdown
+			exit
+
+		exit 
 	write
 ```
