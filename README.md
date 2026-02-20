@@ -3,3 +3,8 @@ Practica 1 del cursos de Redes de Computadoras 2
 
 
 hola
+
+## Integrantes:
+
+* YairCarrito45
+
