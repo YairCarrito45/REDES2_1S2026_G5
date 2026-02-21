@@ -663,3 +663,276 @@ enable
 		exit 
 	write
 ```
+
+
+# Protocolo STP:
+
+En la topologia actual del edificio derecho el `SW19_G5` es el actual bridge root, el que esta conectado al PC4:
+
+```bash
+SW19_G5#show spanning-tree
+VLAN0001
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32769
+             Address     0001.6332.A29C
+             This bridge is the root
+             Hello Time  2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32769  (priority 32768 sys-id-ext 1)
+             Address     0001.6332.A29C
+             Hello Time  2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  20
+
+Interface        Role Sts Cost      Prio.Nbr Type
+---------------- ---- --- --------- -------- --------------------------------
+Fa0/1            Desg FWD 19        128.1    P2p
+Fa0/2            Desg FWD 19        128.2    P2p
+
+
+
+```
+
+
+vamos a aplicar el Rapid Spanning tree (RSTP) y reubicar el root Brige a el SW16_G5
+
+# Rapid STP:
+
+## SW16_G5 -> nuevo root Brige para las vlan 65, 75, 85
+
+```Cisco 
+enable
+	config terminal
+
+	spanning-tree mode rapid-pvst
+	spanning-tree vlan 65,75,85 priority 4096 # o en vez de "priority 4096" poner "root primary"
+	
+	exit 
+write
+```
+
+### confirmamos con show spanning-tree:
+```bash
+
+SW16_G5#show spanning-tree 
+VLAN0001
+	  Spanning tree enabled protocol rstp
+	  Root ID    Priority    32769
+	             Address     0001.6332.A29C
+	             Cost        19
+	             Port        5(FastEthernet0/5)
+	             Hello Time  2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+	  Bridge ID  Priority    32769  (priority 32768 sys-id-ext 1)
+	             Address     0001.C98D.A6EC
+	             Hello Time  2 sec  Max Age 20 sec  Forward Delay 15 sec
+	             Aging Time  20
+
+	Interface        Role Sts Cost      Prio.Nbr Type
+	---------------- ---- --- --------- -------- --------------------------------
+	Fa0/1            Desg LRN 19        128.1    P2p
+	Fa0/2            Desg LRN 19        128.2    P2p
+	Fa0/3            Desg LRN 19        128.3    P2p
+	Fa0/4            Desg LRN 19        128.4    P2p
+	Fa0/5            Root FWD 19        128.5    P2p
+	Fa0/6            Desg LRN 19        128.6    P2p
+	Fa0/7            Desg LRN 19        128.7    P2p
+	Fa0/8            Desg LRN 19        128.8    P2p
+	Fa0/9            Desg LRN 19        128.9    P2p
+	Fa0/10           Desg LRN 19        128.10   P2p
+
+VLAN0065
+		  Spanning tree enabled protocol rstp
+		  Root ID    Priority    4161
+		             Address     0001.C98D.A6EC
+		             This bridge is the root
+		             Hello Time  2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+		  Bridge ID  Priority    4161  (priority 4096 sys-id-ext 65)
+		             Address     0001.C98D.A6EC
+		             Hello Time  2 sec  Max Age 20 sec  Forward Delay 15 sec
+		             Aging Time  20
+
+		Interface        Role Sts Cost      Prio.Nbr Type
+		---------------- ---- --- --------- -------- --------------------------------
+		Fa0/1            Desg FWD 19        128.1    P2p
+		Fa0/2            Desg FWD 19        128.2    P2p
+		Fa0/3            Desg FWD 19        128.3    P2p
+		Fa0/4            Desg FWD 19        128.4    P2p
+		Fa0/5            Desg FWD 19        128.5    P2p
+		Fa0/6            Desg FWD 19        128.6    P2p
+		Fa0/7            Desg LRN 19        128.7    P2p
+		Fa0/8            Desg FWD 19        128.8    P2p
+		Fa0/9            Desg FWD 19        128.9    P2p
+		Fa0/10           Desg FWD 19        128.10   P2p
+
+VLAN0075
+		  Spanning tree enabled protocol rstp
+		  Root ID    Priority    4171
+		             Address     0001.C98D.A6EC
+		             This bridge is the root
+		             Hello Time  2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+		  Bridge ID  Priority    4171  (priority 4096 sys-id-ext 75)
+		             Address     0001.C98D.A6EC
+		             Hello Time  2 sec  Max Age 20 sec  Forward Delay 15 sec
+		             Aging Time  20
+
+		Interface        Role Sts Cost      Prio.Nbr Type
+		---------------- ---- --- --------- -------- --------------------------------
+		Fa0/1            Desg FWD 19        128.1    P2p
+		Fa0/2            Desg FWD 19        128.2    P2p
+		Fa0/3            Desg FWD 19        128.3    P2p
+		Fa0/4            Desg FWD 19        128.4    P2p
+		Fa0/5            Desg FWD 19        128.5    P2p
+		Fa0/6            Desg FWD 19        128.6    P2p
+		Fa0/7            Desg LRN 19        128.7    P2p
+		Fa0/8            Desg FWD 19        128.8    P2p
+		Fa0/9            Desg FWD 19        128.9    P2p
+		Fa0/10           Desg FWD 19        128.10   P2p
+
+VLAN0085
+		  Spanning tree enabled protocol rstp
+		  Root ID    Priority    4181
+		             Address     0001.C98D.A6EC
+		             This bridge is the root
+		             Hello Time  2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+		  Bridge ID  Priority    4181  (priority 4096 sys-id-ext 85)
+		             Address     0001.C98D.A6EC
+		             Hello Time  2 sec  Max Age 20 sec  Forward Delay 15 sec
+		             Aging Time  20
+
+		Interface        Role Sts Cost      Prio.Nbr Type
+		---------------- ---- --- --------- -------- --------------------------------
+		Fa0/1            Desg FWD 19        128.1    P2p
+		Fa0/2            Desg FWD 19        128.2    P2p
+		Fa0/3            Desg FWD 19        128.3    P2p
+		Fa0/4            Desg FWD 19        128.4    P2p
+		Fa0/5            Desg FWD 19        128.5    P2p
+		Fa0/6            Desg FWD 19        128.6    P2p
+		Fa0/7            Desg LRN 19        128.7    P2p
+		Fa0/8            Desg FWD 19        128.8    P2p
+		Fa0/9            Desg FWD 19        128.9    P2p
+		Fa0/10           Desg FWD 19        128.10   P2p
+
+SW16_G5#
+
+```
+
+## para el resto de switch12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 23
+```Cisco
+enable
+	config terminal
+		spanning-tree mode rapid-pvst
+		# spanning-tree vlan 65,75,85 priority 32768 # prioridad por defecto
+		exit
+	write
+
+```
+
+
+# Estudio de Convergencia para el EDIFICO DERECHO
+
+## Procedimiento de prueba:
+
+### 1. Se configura la topología con dichos protocolos.
+
+Para el edificio derecho se utilizo Rapid Spanning tree
+```Cisco
+enable
+	config terminal
+		spanning-tree mode rapid-pvst
+		exit
+	write
+
+```
+
+### 2. Se identifica cuál es el enlace activo/forwarding y cuál se encuentra bloqueado/blocked.
+
+Para el SW18_G5:
+![sw18_g5](./images/edifico_der/convergencia_sw18.png)
+
+
+
+### 3. Se elimina el enlace activo/forwarding y se mide la convergencia. 
+
+* identificar los enlaces activos y bloqueados:
+![](./images/edifico_der/enlaces_bloqueados.png)
+
+* prueba de ping entre PC7 y una laptop_x
+
+1. En modo simulacion, se realiza el ping entre pc7 y lpt_x, sin bajar ninguna conexion.
+![](./images/edifico_der/ping1.png)
+
+2. pausamos la simulacion cuando el Last Status sea successfull y verificamos el Time(sec)
+![](./images/edifico_der/ping2.png)
+
+3. en los logs de la simulacion verificamos el tiempo al momento de pausar.
+![](./images/edifico_der/ping3.png)
+
+
+se tardo 0.030 s
+
+4. repetimos la simulacion bajando el puerto FWD (Fa0/4), el cambio es practivamnte inmediato.
+![](./images/edifico_der/caido1.png)
+
+
+5. lo volvemos a levantar con `no shutdown`y lo desconectamos manualmente:
+![](./images/edifico_der/caido2.png)
+
+
+6. dejamos correr la simulacion, con el puerto cambiado de estado:
+![](./images/edifico_der/caido3.png)
+
+7. termina la simulacion hasta que el ping se complete, para visualiar el timepo:
+![](./images/edifico_der/caido4.png)
+
+0.033s
+
+
+
+
+### 4. Se documenta el tiempo obtenido. Colocar 0 si el tiempo de convergencia no es notorio.
+
+Durante las pruebas realizadas en el edificio derecho utilizando **Rapid PVST**, se obtuvieron los siguientes resultados:
+
+* Tiempo de respuesta inicial (sin falla de enlace): **0.030 segundos**
+* Tiempo de respuesta tras la caída del enlace activo (Fa0/4 en estado Forwarding): **0.033 segundos**
+
+La diferencia observada entre ambos tiempos fue de **0.003 segundos**, lo cual es prácticamente imperceptible dentro del entorno de simulación de Packet Tracer.
+
+Debido a que el cambio de estado del puerto alterno a Forwarding ocurrió de manera casi inmediata, se concluye que el tiempo de convergencia es **no notorio**, por lo que según las indicaciones del procedimiento, se puede documentar como:
+
+> **Tiempo de convergencia: 0 segundos (no perceptible)**
+
+Esto demuestra que Rapid PVST permite una recuperación prácticamente inmediata ante la falla de un enlace activo.
+
+
+### 5. Por último, se elige la propuesta final, aquel escenario que presente el menor tiempo deconvergencia. Deben explicar el porqué eligieron ese escenario.
+
+La combinación seleccionada como propuesta final fue:
+
+> **Rapid PVST con el switch central configurado como Root Bridge**
+
+Esta elección se fundamenta en los siguientes aspectos técnicos:
+
+1. **Tiempo mínimo de convergencia:**
+   La red mostró un tiempo de recuperación prácticamente inmediato (≈0 segundos perceptibles), lo que garantiza continuidad en la comunicación entre dispositivos finales.
+
+2. **Transición rápida de puertos alternos:**
+   Rapid PVST permite que los puertos en estado Alternate cambien directamente a Forwarding sin pasar por los estados prolongados de Listening y Learning del STP tradicional.
+
+3. **Mayor estabilidad de la topología:**
+   Al definir manualmente el Root Bridge en el switch central, se garantiza una estructura lógica jerárquica y predecible, evitando elecciones aleatorias del dispositivo raíz.
+
+4. **Alta disponibilidad:**
+   Ante la caída de un enlace activo, el tráfico fue redirigido automáticamente por rutas redundantes sin afectar significativamente el servicio.
+
+En conclusión, Rapid PVST representa el mejor escenario para esta topología, ya que ofrece el menor tiempo de convergencia, mayor eficiencia en la recuperación ante fallas y mejor control administrativo sobre la estructura de la red.
+
+
+
+
+
+
+
