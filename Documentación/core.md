@@ -58,7 +58,100 @@ end
 write
 ```
 
+# Router 2
+```Cisco
+enable
+conf t
 
+hostname Router2_G5
+
+# ENLACE HACIA ROUTER3 (OSPF)
+interface gigabitEthernet0/0
+ ip address 10.10.6.1 255.255.255.0
+ no shutdown
+ exit
+
+# ENLACE HACIA ROUTER1 (RIP)
+interface gigabitEthernet0/1
+ ip address 10.10.7.1 255.255.255.0
+ no shutdown
+ exit
+
+
+# CONFIGURAR OSPF
+router ospf 1
+ router-id 2.2.2.2
+ network 10.10.6.0 0.0.0.255 area 0
+ passive-interface gigabitEthernet0/1
+ redistribute rip subnets
+ exit
+
+# CONFIGURAR RIP
+router rip
+ version 2
+ no auto-summary
+ network 10.10.7.0
+ passive-interface gigabitEthernet0/0
+ redistribute ospf 1 metric 2
+ exit
+
+end
+write
+
+```
+
+
+# router 0
+
+```cisco
+enable
+conf t
+
+hostname Router0_G5
+
+! ENLACE HACIA ROUTER1 (EIGRP)
+interface gigabitEthernet0/1
+ ip address 10.10.8.1 255.255.255.0
+ no shutdown
+ exit
+
+! TRONCAL HACIA SWITCH (Router-on-a-Stick)
+
+interface gigabitEthernet0/0
+ no shutdown
+ exit
+
+! -------- VLAN 15 ----------
+interface gigabitEthernet0/0.15
+ encapsulation dot1Q 15
+ ip address 192.178.15.1 255.255.255.0
+ exit
+
+! -------- VLAN 25 ----------
+interface gigabitEthernet0/0.25
+ encapsulation dot1Q 25
+ ip address 192.178.25.1 255.255.255.0
+ exit
+
+! -------- VLAN 35 ----------
+interface gigabitEthernet0/0.35
+ encapsulation dot1Q 35
+ ip address 192.178.35.1 255.255.255.0
+ exit
+
+! CONFIGURAR EIGRP
+router eigrp 100
+ no auto-summary
+ network 10.10.8.0 0.0.0.255
+ network 192.178.15.0 0.0.0.255
+ network 192.178.25.0 0.0.0.255
+ network 192.178.35.0 0.0.0.255
+ exit
+
+end
+write
+
+``` 
 
 RIP
 router rip
